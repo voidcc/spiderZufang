@@ -57,7 +57,6 @@ class SpiderMain(object):
 	def show_house_num(self, soup):
 		tag = soup.find(class_= "list-head clear").find("span")
 		house_num = tag.get_text()
-		print "house_num: %s" % house_num
 		return int(house_num)
 
 	def list_house(self, soup):
@@ -73,10 +72,12 @@ class SpiderMain(object):
 			#house.meters = data.find(class_='meters').get_text()
 			house.price = data.find(class_='price').get_text()
 			house.price_pre = data.find(class_='price-pre').get_text()
+			house.url = data.find(class_="pic-panel").find('a')['href']
 			print house.show()
 
 	def parse_each_page(self, page_index, area):
-		url = '%spg%d%s%s' % (self.root_url, page_index, self.constraint, area)
+		url = '%spg%d%s%s' % (self.root_url, page_index, self.constraint,
+			urllib.quote(area))
 		#print 'url:',url
 		html_cont = self.download(url)
 		soup = BeautifulSoup(html_cont, 'lxml')
@@ -88,35 +89,36 @@ class SpiderMain(object):
 		#soup = BeautifulSoup(html_cont, 'html.parser', from_encoding='utf-8')
 		soup = BeautifulSoup(html_cont, 'lxml')
 		house_num = self.show_house_num(soup)
+		#print "house_num: %d" % house_num
 		page_num = (house_num + 29) / 30
-		#print "page_num: %s" % page_num
+		print "\nRegion: %s  House_num: %d  Page_num: %d" % (area, house_num,
+			page_num)
 		for page_index in range(1, page_num + 1):
 			self.parse_each_page(page_index, area)
 
-
 	def craw(self):
-		for x in self.areas:
-			area = urllib.quote(x)
-			url = self.root_url + self.constraint + area
+		for area in self.areas:
+			url = '%s%s%s' % (self.root_url, self.constraint,
+				urllib.quote(area))
 			html_cont = self.download(url)
 			if html_cont == None:
 				continue
 			self.parse(url, html_cont, area)
 
-		"""
-		for url in self.urls:
-			#print url
-			html_cont = self.download(url)
-			if html_cont == None:
-				continue
-			self.parse(url, html_cont)
-		"""
 
 if __name__ == "__main__":
 	#root_url = "http://bj.lianjia.com/zufang/"
 	#constraint = 'l2brp5500erp7500rs'
-	areas = ['望京西园', '望京西园二区']
+	areas = ['望京西园一区',
+	         '望京西园二区',
+	         '南湖中园一区',
+	         '南湖中园二区',
+	         '南湖东园一区',
+	         '南湖东园二区',
+	         '望京花园东区',
+	         '望京花园西区',
+	         '利泽西园']
 	#urls = map(lambda x:(root_url + constraint + urllib.quote(x)), areas)
-	spider = SpiderMain(areas, 2, 5500, 10000)
+	spider = SpiderMain(areas, 2, 5500, 7500)
 	spider.craw()
 
