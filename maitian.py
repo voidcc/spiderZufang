@@ -23,8 +23,8 @@ class House(object):
 
 	def show(self):
 		#return '%s %s %s' % (self.id, self.where, self.price)
-		return u'%s %s平 %s %s %s %s' % (self.region, self.meters, self.zone,
-				self.direct, self.floor, self.price)
+		return u'%s %s平 %s %s %s %s元 %s' % (self.region, self.meters, self.zone,
+				self.direct, self.floor, self.price, self.url)
 
 
 class Spider_MaiTian(object):
@@ -111,11 +111,21 @@ class Spider_MaiTian(object):
 		for k, v in region_dict:
 			print k, len(v)
 		"""
+		"""
 		for k in region_dict.keys():
 			print
 			print k, len(region_dict[k])
 			for i in region_dict[k]:
 				print i.show()
+		"""
+		with open('maitian.txt', 'w') as fp:
+			for k in region_dict.keys():
+				#fp.write('%s  %d套\n' % (k, len(region_dict[k])))
+				fp.write(k.encode('utf-8'))
+				fp.write('  %d\n' % len(region_dict[k]))
+				for i in region_dict[k]:
+					fp.write('%s\n' % i.show().encode('utf-8'))
+				fp.write('\n')
 
 	def craw(self):
 		html_cont = self.download(self.root_url + self.constraint)
