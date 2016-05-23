@@ -119,6 +119,6 @@ if __name__ == "__main__":
 	         '望京花园西区',
 	         '利泽西园']
 	#urls = map(lambda x:(root_url + constraint + urllib.quote(x)), areas)
-	spider = SpiderMain(areas, 2, 5500, 7500)
+	spider = SpiderMain(areas, 2, 4000, 7500)
 	spider.craw()
 
